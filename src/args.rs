@@ -14,7 +14,7 @@ fn print_help() {
 
 pub struct Args {
     pub ip: String,
-    pub port: u16,
+    pub port: u32,
     pub file: String,
     pub text: String,
 }
@@ -25,7 +25,7 @@ pub fn get_args() -> Args {
     let args = env::args().collect::<Vec<String>>();
 
     let mut ip = String::new();
-    let mut port = 9100;
+    let mut port: u32 = 9100;
     let mut file = String::new();
     let mut text = String::new();
 
@@ -34,7 +34,7 @@ pub fn get_args() -> Args {
         if arg == "-i" {
             ip = args[i + 1].clone();
         } else if arg == "-p" {
-            port = args[i + 1].parse::<u16>().unwrap();
+            port = args[i + 1].parse::<u32>().unwrap();
         } else if arg == "-f" {
             file = args[i + 1].clone();
         } else if arg == "-t" {
