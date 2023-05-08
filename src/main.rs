@@ -1,6 +1,7 @@
 use esc_pos_lib::printer;
 mod args;
 use esc_pos_lib::qr;
+use esc_pos_lib::constants;
 
 fn print(p: printer::Printer, ip: String, port: u32) {
 
@@ -31,7 +32,10 @@ fn print_file(p: &mut printer::Printer, file: &String) {
     for line in lines {
         if line.starts_with("@qr@") {
             let s = line.replace("@qr@", "");
-            let qr = qr::Qr::new(s.into_bytes());
+            let mut qr = qr::Qr::new(s.into_bytes());
+            qr.set_size(10);
+            qr.set_error_correction(constants::ERROR_M);
+            qr.set_model(constants::QR_MODEL_MICRO);
             p.add_qr(qr);
         } else {
             p.add_str(&line);

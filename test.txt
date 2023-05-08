@@ -2,6 +2,7 @@
 
 Hello 
 Here's a qr code:
+
 @qr@Hello
 
 Wha?
