@@ -1,6 +1,7 @@
 use esc_pos_lib::printer;
 mod args;
 use esc_pos_lib::qr;
+use esc_pos_lib::image;
 
 fn print(p: printer::Printer, ip: String, port: u32) {
 
@@ -25,18 +26,36 @@ fn line_split(line: &String) -> Vec<String> {
     words
 }
 
+fn print_qr(p: &mut printer::Printer, s: String) {
+    let qr = qr::Qr::new(s.into_bytes());
+    p.add_qr(qr);
+}
+
 fn print_file(p: &mut printer::Printer, file: &String) {
     let indata = std::fs::read_to_string(file).unwrap();
     let lines = line_split(&indata);
     for line in lines {
         if line.starts_with("@qr@") {
             let s = line.replace("@qr@", "");
-            let qr = qr::Qr::new(s.into_bytes());
-            p.add_qr(qr);
+            print_qr(p, s);
+        } else if line.starts_with("@img@") {
+            let s = line.replace("@img@", "");
+            print_image(p, &s);
         } else {
             p.add_str(&line);
         }
     }
+}
+
+fn print_image(p: &mut printer::Printer, file: &String) {
+    let img = match image::image_from_path(file) {
+        Ok(img) => img,
+        Err(e) => {
+            println!("Error: {}", e);
+            return;
+        }
+    };
+    p.add(img.export());
 }
 
 
@@ -57,7 +76,11 @@ fn main() {
     match args.file.as_str() {
         "" => (),
         _ => {
-            print_file(&mut p, &args.file);
+            if args.img {
+                print_image(&mut p, &args.file);
+            } else {
+                print_file(&mut p, &args.file);
+            }
             p.cut();
             print(p, ip, port);
             return;
