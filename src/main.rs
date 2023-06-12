@@ -43,6 +43,7 @@ fn print_file(p: &mut printer::Printer, file: &String) {
             print_image(p, &s);
         } else {
             p.add_str(&line);
+            p.add_str("\n");
         }
     }
 }
@@ -56,6 +57,7 @@ fn print_image(p: &mut printer::Printer, file: &String) {
         }
     };
     p.add(img.export());
+    p.add_str("\n");
 }
 
 
