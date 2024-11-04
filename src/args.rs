@@ -1,6 +1,5 @@
 use std::env;
 
-
 fn print_help() {
     println!("Usage: kvitto");
     println!("Options:");
@@ -12,18 +11,16 @@ fn print_help() {
     println!("\t-i\n\t\tSpecify the image to print");
 }
 
-
 pub struct Args {
     pub ip: String,
     pub port: u32,
     pub file: String,
     pub text: String,
     pub img: bool,
+    pub outfile: String,
 }
 
-
 pub fn get_args() -> Args {
-
     let args = env::args().collect::<Vec<String>>();
 
     let mut ip = String::new();
@@ -31,18 +28,25 @@ pub fn get_args() -> Args {
     let mut file = String::new();
     let mut text = String::new();
     let mut img = false;
-
+    let mut outfile = String::new();
     for (i, arg) in args.iter().enumerate() {
         match arg.as_str() {
-            "-a" => ip = args[i+ 1].clone(),
-            "-p" => port = args[i+ 1].parse::<u32>().unwrap(),
-            "-f" => file = args[i+ 1].clone(),
-            "-t" => text = args[i+ 1].clone(),
-            "-i" => {img = true; file = args[i+ 1].clone();},
-            "-h" => {print_help(); std::process::exit(0);},
+            "-a" => ip = args[i + 1].clone(),
+            "-p" => port = args[i + 1].parse::<u32>().unwrap(),
+            "-f" => file = args[i + 1].clone(),
+            "-t" => text = args[i + 1].clone(),
+            "-i" => {
+                img = true;
+                file = args[i + 1].clone();
+            }
+            "-h" => {
+                print_help();
+                std::process::exit(0);
+            }
+            "-o" => outfile = args[i + 1].clone(),
             _ => (),
         };
-   }
+    }
 
     Args {
         ip,
@@ -50,5 +54,6 @@ pub fn get_args() -> Args {
         file,
         text,
         img,
+        outfile,
     }
 }

@@ -1,9 +1,13 @@
 use esc_pos_lib::printer;
 mod args;
-use esc_pos_lib::qr;
 use esc_pos_lib::image;
+use esc_pos_lib::qr;
 
-fn print(p: printer::Printer, ip: String, port: u32) {
+fn print(p: printer::Printer, ip: String, port: u32, outfile: String) {
+    if outfile != "" {
+        p.print_file(outfile.as_str());
+        return;
+    }
 
     match p.print(ip, port) {
         Ok(_) => println!("Printed"),
@@ -60,13 +64,15 @@ fn print_image(p: &mut printer::Printer, file: &String) {
     p.add_str("\n");
 }
 
-
 fn main() {
-    
     let args = args::get_args();
 
     let mut p = printer::Printer::new();
-    
+
+    let outfile: String = match args.outfile.as_str() {
+        "" => String::new(),
+        _ => args.outfile,
+    };
     let ip: String = match args.ip.as_str() {
         "" => "192.168.0.157".to_string(),
         _ => args.ip,
@@ -84,7 +90,7 @@ fn main() {
                 print_file(&mut p, &args.file);
             }
             p.cut();
-            print(p, ip, port);
+            print(p, ip, port, outfile);
             return;
         }
     };
@@ -93,9 +99,8 @@ fn main() {
         _ => {
             p.add_str(args.text.as_str());
             p.cut();
-            print(p, ip, port);
+            print(p, ip, port, outfile);
             return;
         }
     };
-    
 }
