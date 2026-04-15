@@ -4,7 +4,7 @@ use esc_pos_lib::image;
 use esc_pos_lib::qr;
 
 fn print(p: printer::Printer, ip: String, port: u32, outfile: String) {
-    if outfile != "" {
+    if !outfile.is_empty() {
         p.print_file(outfile.as_str());
         return;
     }
@@ -15,18 +15,23 @@ fn print(p: printer::Printer, ip: String, port: u32, outfile: String) {
     };
 }
 
-fn line_split(line: &String) -> Vec<String> {
+fn line_split(line: &str) -> Vec<String> {
     let mut words: Vec<String> = Vec::new();
     let mut word: String = String::new();
     for c in line.chars() {
         if c == '\n' {
+            if word.ends_with('\r') {
+                word.pop();
+            }
             words.push(word);
             word = String::new();
         } else {
             word.push(c);
         }
     }
-    words.push(word);
+    if !word.is_empty() {
+        words.push(word);
+    }
     words
 }
 
@@ -52,7 +57,7 @@ fn print_file(p: &mut printer::Printer, file: &String) {
     }
 }
 
-fn print_image(p: &mut printer::Printer, file: &String) {
+fn print_image(p: &mut printer::Printer, file: &str) {
     let img = match image::image_from_path(file) {
         Ok(img) => img,
         Err(e) => {
@@ -100,7 +105,6 @@ fn main() {
             p.add_str(args.text.as_str());
             p.cut();
             print(p, ip, port, outfile);
-            return;
         }
     };
 }
